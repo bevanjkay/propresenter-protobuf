@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    exclude-paths:
+      - .github/workflows/actionlint.yml
+    schedule:
+      interval: monthly
+      time: !!str 08:00
+      timezone: Australia/Melbourne
+    groups:
+      gh-actions:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
