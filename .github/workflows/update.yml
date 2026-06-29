@@ -65,6 +65,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          EXISTING_PR=$(gh pr list --base main --head "${BRANCH}" --state open --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "${EXISTING_PR}" ]; then
+            echo "PR #${EXISTING_PR} already open for ${VERSION}, skipping."
+            exit 0
+          fi
+
           git checkout -b "${BRANCH}"
           echo "${VERSION}" > version.txt
           git add -A
@@ -73,9 +80,9 @@ jobs:
             exit 0
           fi
           git commit -m "Update protobufs for ProPresenter ${VERSION}"
-          git push origin "${BRANCH}"
+          git push --force origin "${BRANCH}"
           gh pr create \
             --title "Update protobufs for ProPresenter ${VERSION}" \
             --body "Automated update for ProPresenter ${VERSION}." \
             --base main \
-            --head "${BRANCH}" || true
+            --head "${BRANCH}"
